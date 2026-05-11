@@ -67,7 +67,7 @@ namespace job_Portal_Backend.Controllers
         // LOGIN
         // ======================
         [HttpPost(AuthRoutes.Login)]
-        public async Task<IActionResult> Login(LoginDto dto)
+       public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             if (dto == null
                 || string.IsNullOrWhiteSpace(dto.Email)

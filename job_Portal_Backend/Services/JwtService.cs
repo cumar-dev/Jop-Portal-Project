@@ -44,7 +44,7 @@ namespace job_Portal_Backend.Services
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: credentials
             );
 

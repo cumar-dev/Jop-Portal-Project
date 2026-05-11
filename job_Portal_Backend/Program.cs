@@ -1,25 +1,59 @@
 using job_Portal_Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers
+// ================= Controllers =================
 builder.Services.AddControllers();
 
-// Swagger
+// ================= Swagger =================
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    // JWT Auth Configuration for Swagger
+    options.AddSecurityDefinition("Bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter: Bearer YOUR_TOKEN"
+        });
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+});
 
 // ================= MongoDB =================
-var mongoConnectionString = builder.Configuration["MongoDbSettings:ConnectionString"];
+var mongoConnectionString =
+    builder.Configuration["MongoDbSettings:ConnectionString"];
 
 if (string.IsNullOrWhiteSpace(mongoConnectionString))
     throw new Exception("MongoDB ConnectionString missing");
 
-builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoConnectionString));
+builder.Services.AddSingleton<IMongoClient>(
+    _ => new MongoClient(mongoConnectionString)
+);
 
 // ================= JWT =================
 var jwtKey = builder.Configuration["JwtSettings:Key"];
@@ -35,39 +69,52 @@ if (string.IsNullOrWhiteSpace(jwtIssuer))
 if (string.IsNullOrWhiteSpace(jwtAudience))
     throw new Exception("JWT Audience missing");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey!)
-            )
-        };
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = jwtIssuer,
+                ValidAudience = jwtAudience,
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)
+                    )
+            };
     });
 
+// ================= Authorization =================
 builder.Services.AddAuthorization();
 
-// ================= SERVICES =================
+// ================= Services =================
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtService>();
 
 var app = builder.Build();
 
+// ================= Swagger =================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ❌ Removed HTTPS redirection warning for local testing
+// app.UseHttpsRedirection();
+
+// ================= Middleware =================
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ================= Controllers =================
 app.MapControllers();
+
 app.Run();
