@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text;
-
+using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 // ================= Controllers =================
@@ -87,7 +87,8 @@ builder.Services
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(jwtKey)
-                    )
+                    ),
+                     RoleClaimType = ClaimTypes.Role
             };
     });
 
