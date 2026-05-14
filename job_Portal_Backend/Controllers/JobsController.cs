@@ -68,25 +68,23 @@ namespace job_Portal_Backend.Controllers
         // =========================
         [Authorize(Roles = "Employer")]
         [HttpPut(JobRoutes.Update)]
-        public async Task<IActionResult> UpdateJob(
-            string id,
-            [FromBody] Job updatedJob)
+        public async Task<IActionResult> UpdateJob(string id, [FromBody] Job updatedJob)
         {
-            var result =
-                await _jobs.ReplaceOneAsync(
-                    j => j.Id == id,
-                    updatedJob
-                );
+            var filter = Builders<Job>.Filter.Eq(j => j.Id, id);
+
+            var update = Builders<Job>.Update
+                .Set(j => j.Title, updatedJob.Title)
+                .Set(j => j.Company, updatedJob.Company)
+                .Set(j => j.Description, updatedJob.Description)
+                .Set(j => j.Location, updatedJob.Location)
+                .Set(j => j.Experience, updatedJob.Experience);
+
+            var result = await _jobs.UpdateOneAsync(filter, update);
 
             if (result.MatchedCount == 0)
-            {
                 return NotFound("Job not found");
-            }
 
-            return Ok(new
-            {
-                Message = "Job updated successfully"
-            });
+            return Ok(new { Message = "Job updated successfully" });
         }
 
         // =========================
