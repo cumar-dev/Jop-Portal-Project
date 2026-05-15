@@ -5,17 +5,36 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text;
 using System.Security.Claims;
-var builder = WebApplication.CreateBuilder(args);
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
 // ================= Controllers =================
 builder.Services.AddControllers();
+
+// ================= CORS (FIXED - IMPORTANT) =================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // ================= Swagger =================
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
 {
-    // JWT Auth Configuration for Swagger
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Job Portal API",
+        Version = "v1"
+    });
+
+    // JWT Auth in Swagger
     options.AddSecurityDefinition("Bearer",
         new OpenApiSecurityScheme
         {
@@ -55,6 +74,14 @@ builder.Services.AddSingleton<IMongoClient>(
     _ => new MongoClient(mongoConnectionString)
 );
 
+// Optional (clean DB injection)
+builder.Services.AddSingleton(sp =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    var dbName = builder.Configuration["MongoDbSettings:DatabaseName"];
+   return client.GetDatabase(dbName);
+});
+
 // ================= JWT =================
 var jwtKey = builder.Configuration["JwtSettings:Key"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
@@ -69,38 +96,41 @@ if (string.IsNullOrWhiteSpace(jwtIssuer))
 if (string.IsNullOrWhiteSpace(jwtAudience))
     throw new Exception("JWT Audience missing");
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+// FIXED Authentication setup
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters =
-            new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
 
-                ValidIssuer = jwtIssuer,
-                ValidAudience = jwtAudience,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
 
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtKey)
-                    ),
-                     RoleClaimType = ClaimTypes.Role
-            };
-    });
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey)
+        ),
+
+        RoleClaimType = ClaimTypes.Role
+    };
+});
 
 // ================= Authorization =================
 builder.Services.AddAuthorization();
 
-// ================= Services =================
+// ================= Custom Services =================
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtService>();
 
 var app = builder.Build();
-
+app.UseHttpsRedirection();
 // ================= Swagger =================
 if (app.Environment.IsDevelopment())
 {
@@ -108,10 +138,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// ❌ Removed HTTPS redirection warning for local testing
-// app.UseHttpsRedirection();
+// ================= Middleware ORDER (VERY IMPORTANT) =================
+app.UseRouting();
 
-// ================= Middleware =================
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
