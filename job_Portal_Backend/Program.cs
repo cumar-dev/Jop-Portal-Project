@@ -130,7 +130,7 @@ builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtService>();
 
 var app = builder.Build();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 // ================= Swagger =================
 if (app.Environment.IsDevelopment())
 {
