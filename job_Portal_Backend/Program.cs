@@ -7,6 +7,16 @@ using System.Text;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Port-ka React-kaaga
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 builder.Logging.AddConsole();
 // ================= Controllers =================
 builder.Services.AddControllers();
