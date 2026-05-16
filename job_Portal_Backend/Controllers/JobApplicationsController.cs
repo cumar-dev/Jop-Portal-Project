@@ -88,5 +88,115 @@ namespace job_Portal_Backend.Controllers
 
             return Ok(applications);
         }
+
+        // =========================
+        // UPDATE APPLICATION
+        // =========================
+        [Authorize(Roles = "Applicant")]
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateApplication(
+            string id,
+            [FromBody] ApplyJobDto dto)
+        {
+            var userId =
+                User.FindFirst(ClaimTypes.NameIdentifier)
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var existingApplication =
+                await _applications
+                .Find(a =>
+                    a.Id == id &&
+                    a.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (existingApplication == null)
+            {
+                return NotFound(
+                    "Application not found");
+            }
+
+            // UPDATE VALUES
+            existingApplication.JobId =
+          dto.JobId;
+
+            existingApplication.UserId =
+                userId;
+           
+           existingApplication.YearsOfExperience =
+                dto.YearsOfExperience;
+
+            existingApplication.Skills =
+                dto.Skills;
+
+            existingApplication.EducationLevel =
+                dto.EducationLevel;
+
+            existingApplication.CVFileUrl =
+                dto.CVFileUrl;
+
+            existingApplication.Message =
+                dto.Message;
+
+            existingApplication.AppliedAt =
+                DateTime.UtcNow;
+
+            await _applications.ReplaceOneAsync(
+                a => a.Id == id,
+                existingApplication);
+
+            return Ok(new
+            {
+                Message =
+                    "Application updated successfully",
+
+                Application =
+                    existingApplication
+            });
+        }
+
+        // =========================
+        // DELETE APPLICATION
+        // =========================
+        [Authorize(Roles = "Applicant")]
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteApplication(
+            string id)
+        {
+            var userId =
+                User.FindFirst(ClaimTypes.NameIdentifier)
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var application =
+                await _applications
+                .Find(a =>
+                    a.Id == id &&
+                    a.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (application == null)
+            {
+                return NotFound(
+                    "Application not found");
+            }
+
+            await _applications.DeleteOneAsync(
+                a => a.Id == id);
+
+            return Ok(new
+            {
+                Message =
+                    "Application deleted successfully"
+            });
+        }
     }
 }
