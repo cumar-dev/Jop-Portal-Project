@@ -3,34 +3,25 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
-using System.Text;
 using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173") // Port-ka React-kaaga
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
+
 builder.Logging.AddConsole();
+
 // ================= Controllers =================
 builder.Services.AddControllers();
 
-// ================= CORS (FIXED - IMPORTANT) =================
+// ================= CORS =================
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 // ================= Swagger =================
@@ -44,52 +35,48 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    // JWT Auth in Swagger
-    options.AddSecurityDefinition("Bearer",
-        new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Enter: Bearer YOUR_TOKEN"
-        });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter: Bearer YOUR_TOKEN"
+    });
 
-    options.AddSecurityRequirement(
-        new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
+            new OpenApiSecurityScheme
             {
-                new OpenApiSecurityScheme
+                Reference = new OpenApiReference
                 {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                Array.Empty<string>()
-            }
-        });
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // ================= MongoDB =================
-var mongoConnectionString =
-    builder.Configuration["MongoDbSettings:ConnectionString"];
+var mongoConnectionString = builder.Configuration["MongoDbSettings:ConnectionString"];
+var dbName = builder.Configuration["MongoDbSettings:DatabaseName"];
 
 if (string.IsNullOrWhiteSpace(mongoConnectionString))
     throw new Exception("MongoDB ConnectionString missing");
 
-builder.Services.AddSingleton<IMongoClient>(
-    _ => new MongoClient(mongoConnectionString)
-);
+if (string.IsNullOrWhiteSpace(dbName))
+    throw new Exception("MongoDB DatabaseName missing");
 
-// Optional (clean DB injection)
+builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoConnectionString));
+
 builder.Services.AddSingleton(sp =>
 {
     var client = sp.GetRequiredService<IMongoClient>();
-    var dbName = builder.Configuration["MongoDbSettings:DatabaseName"];
-   return client.GetDatabase(dbName);
+    return client.GetDatabase(dbName);
 });
 
 // ================= JWT =================
@@ -106,12 +93,7 @@ if (string.IsNullOrWhiteSpace(jwtIssuer))
 if (string.IsNullOrWhiteSpace(jwtAudience))
     throw new Exception("JWT Audience missing");
 
-// FIXED Authentication setup
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -135,12 +117,13 @@ builder.Services.AddAuthentication(options =>
 // ================= Authorization =================
 builder.Services.AddAuthorization();
 
-// ================= Custom Services =================
+// ================= Services =================
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddSingleton<CloudinaryService>();
 
 var app = builder.Build();
-// app.UseHttpsRedirection();
+
 // ================= Swagger =================
 if (app.Environment.IsDevelopment())
 {
@@ -148,15 +131,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// ================= Middleware ORDER (VERY IMPORTANT) =================
-app.UseRouting();
+// ================= Middleware =================
+// app.UseHttpsRedirection(); // ✔ enable security
 
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ================= Controllers =================
 app.MapControllers();
 
 app.Run();

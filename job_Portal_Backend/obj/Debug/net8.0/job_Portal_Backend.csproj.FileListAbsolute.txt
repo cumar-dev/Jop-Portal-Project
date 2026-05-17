@@ -7,6 +7,7 @@ C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\n
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\job_Portal_Backend.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\job_Portal_Backend.pdb
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\CloudinaryDotNet.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\DnsClient.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
@@ -19,6 +20,7 @@ C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\n
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Microsoft.OpenApi.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\MongoDB.Bson.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\MongoDB.Driver.dll
+C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\SharpCompress.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Snappier.dll
 C:\Users\cumar\OneDrive\Desktop\Jop_Portal_roject\job_Portal_Backend\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
