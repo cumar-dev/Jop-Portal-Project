@@ -4,6 +4,11 @@ namespace job_Portal_Backend.Routes
     {
         public const string Base = "api/upload";
 
-        public const string UploadFile = "file";
+        public const string Cv = "cv";
+        public const string JobImage = "job-image";
+        public const string CompanyLogo = "company-logo";
+        public const string ProfileImage = "profile-image";
+        public const string Diagnostics = "diagnostics";
+        public const string Config = "config";
     }
 }

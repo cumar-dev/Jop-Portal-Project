@@ -25,6 +25,8 @@ namespace job_Portal_Backend.Models
 
         public string Message { get; set; } = string.Empty;
 
+        public string Status { get; set; } = ApplicationStatus.Pending;
+
         public DateTime AppliedAt { get; set; }
     }
 }

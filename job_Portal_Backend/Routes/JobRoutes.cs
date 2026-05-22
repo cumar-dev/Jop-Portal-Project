@@ -15,5 +15,8 @@ namespace job_Portal_Backend.Routes
 
         // DELETE JOB
         public const string Delete = "{id}";
+
+        // JOBS FOR LOGGED-IN EMPLOYER
+        public const string Mine = "mine";
     }
 }

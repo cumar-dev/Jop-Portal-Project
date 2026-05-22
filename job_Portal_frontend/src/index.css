@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #d9e6ff;
+  --color-brand-200: #bcd4ff;
+  --color-brand-500: #3b6cf4;
+  --color-brand-600: #2554e8;
+  --color-brand-700: #1d44c7;
+  --color-brand-900: #152a6e;
+
+  --color-surface: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-card: #ffffff;
+  --color-elevated: #ffffff;
+  --color-border: #e2e8f0;
+  --color-subtle: #f8fafc;
+  --color-table-head: #f8fafc;
+  --color-overlay: rgb(15 23 42 / 0.45);
+}
+
+.dark {
+  --color-brand-50: #1e293b;
+  --color-brand-100: #1e3a5f;
+  --color-brand-200: #1d4ed8;
+  --color-brand-500: #60a5fa;
+  --color-brand-600: #3b82f6;
+  --color-brand-700: #2563eb;
+  --color-brand-900: #dbeafe;
+
+  --color-surface: #0b1220;
+  --color-ink: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-card: #1e293b;
+  --color-elevated: #0f172a;
+  --color-border: #334155;
+  --color-subtle: #1e293b;
+  --color-table-head: #1e293b;
+  --color-overlay: rgb(0 0 0 / 0.55);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Shared surfaces used across pages */
+.app-panel {
+  @apply rounded-2xl border border-border bg-card shadow-sm;
+}
+
+.app-input {
+  @apply w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-ink shadow-sm outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15;
+}
+
+/* Home hero — readable in light and dark */
+.home-hero {
+  @apply bg-linear-to-br from-brand-900 via-brand-700 to-brand-600;
+}
+
+.dark .home-hero {
+  @apply bg-linear-to-br from-[#0a1020] via-[#152a6e] to-[#1d44c7];
+}
+
+/* Fallback for pages still using slate/white utilities */
+.dark .bg-white {
+  background-color: var(--color-card);
+}
+
+.dark .bg-slate-50 {
+  background-color: var(--color-subtle);
+}
+
+.dark .bg-slate-50\/80,
+.dark .bg-white\/60,
+.dark .bg-white\/80 {
+  background-color: color-mix(in srgb, var(--color-card) 85%, transparent);
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-200\/80,
+.dark .border-slate-300 {
+  border-color: var(--color-border);
+}
+
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: var(--color-muted);
+}
+
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover {
+  background-color: var(--color-subtle);
+}
+
+.dark .divide-slate-100 > :not(:last-child) {
+  border-color: var(--color-border);
+}
+
+.dark .shadow-slate-200\/40,
+.dark .shadow-slate-200\/50,
+.dark .shadow-slate-300\/30 {
+  --tw-shadow-color: rgb(0 0 0 / 0.35);
+}

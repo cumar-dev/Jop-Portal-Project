@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace job_Portal_Backend.Models
 {
@@ -21,5 +22,11 @@ namespace job_Portal_Backend.Models
 
         public string Location { get; set; } =
             string.Empty;
+
+        [JsonPropertyName("imageUrl")]
+        public string ImageUrl { get; set; } = string.Empty;
+
+        // Set by server on create; used to enforce employer-only edits
+        public string EmployerId { get; set; } = string.Empty;
     }
 }

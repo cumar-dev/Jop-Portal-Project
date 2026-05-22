@@ -11,7 +11,7 @@ namespace job_Portal_Backend.Controllers
         // ======================
         // GET
         // ======================
-        [Authorize(Roles = "Employer,JobSeeker")]
+        [Authorize(Roles = "Employer,Applicant")]
         [HttpGet]
         public IActionResult GetProtectedData()
         {
@@ -28,7 +28,7 @@ namespace job_Portal_Backend.Controllers
         // ======================
         // POST
         // ======================
-        [Authorize(Roles = "Employer,JobSeeker")]
+        [Authorize(Roles = "Employer,Applicant")]
         [HttpPost]
         public IActionResult CreateData([FromBody] object data)
         {

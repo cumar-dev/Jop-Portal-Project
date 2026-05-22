@@ -2,6 +2,9 @@
 bin/
 obj/
 
+# Uploaded files (local fallback storage)
+uploads/
+
 # Secrets
 appsettings.json
 appsettings.Development.json

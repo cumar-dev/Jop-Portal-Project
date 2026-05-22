@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace job_Portal_Backend.DTOs
 {
     public class ApplyJobDto
@@ -6,7 +8,10 @@ namespace job_Portal_Backend.DTOs
         public int YearsOfExperience { get; set; }
         public string Skills { get; set; } = string.Empty;
         public string EducationLevel { get; set; } = string.Empty;
+
+        [JsonPropertyName("cvFileUrl")]
         public string CVFileUrl { get; set; } = string.Empty;
+
         public string Message { get; set; } = string.Empty;
     }
 }

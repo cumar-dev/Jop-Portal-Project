@@ -15,13 +15,16 @@ namespace job_Portal_Backend.Controllers
     {
         private readonly UserService _userService;
         private readonly JwtService _jwtService;
+        private readonly CloudinaryStorageService _storage;
 
         public AuthController(
             UserService userService,
-            JwtService jwtService)
+            JwtService jwtService,
+            CloudinaryStorageService storage)
         {
             _userService = userService;
             _jwtService = jwtService;
+            _storage = storage;
         }
 
         // ======================
@@ -40,27 +43,30 @@ namespace job_Portal_Backend.Controllers
                     "All fields are required.");
             }
 
+            var email = dto.Email.Trim().ToLowerInvariant();
+
             // CHECK EMAIL EXISTS
-            if (await _userService.EmailExists(dto.Email))
+            if (await _userService.EmailExists(email))
             {
                 return Conflict(
                     "An account with this email already exists.");
             }
+
+            // VALIDATE ROLE (Only Applicant or Employer allowed)
+            string userRole = dto.Role == "Employer" ? "Employer" : "Applicant";
 
             // CREATE USER
             var user = new User
             {
                 FullName = dto.FullName,
 
-                Email = dto.Email,
+                Email = email,
 
                 PasswordHash =
                     BCrypt.Net.BCrypt.HashPassword(
                         dto.Password),
 
-                // 🔥 IMPORTANT
-                // NEVER TRUST FRONTEND ROLE
-                Role = dto.Role
+                Role = userRole
             };
 
             await _userService.CreateUser(user);
@@ -93,10 +99,10 @@ namespace job_Portal_Backend.Controllers
                     "Email and password are required.");
             }
 
+            var email = dto.Email.Trim().ToLowerInvariant();
+
             // FIND USER
-            var user =
-                await _userService.GetByEmail(
-                    dto.Email);
+            var user = await _userService.GetByEmail(email);
 
             if (user == null)
             {
@@ -126,14 +132,27 @@ namespace job_Portal_Backend.Controllers
 
                 Token = token,
 
-                User = new
-                {
-                    user.Id,
-                    user.FullName,
-                    user.Email,
-                    user.Role
-                }
+                User = MapUserResponse(user)
             });
+        }
+
+        private object MapUserResponse(User user)
+        {
+            var storedImage = Helpers.CloudinaryUrlHelper.CanonicalizeForStorage(user.ProfileImageUrl);
+            var hasImage = !string.IsNullOrWhiteSpace(storedImage);
+
+            return new
+            {
+                user.Id,
+                user.FullName,
+                user.Email,
+                user.Role,
+                profileImageUrl = hasImage
+                    ? Helpers.CloudinaryUrlHelper.BuildCoverDeliveryUrl(storedImage, 400, 400)
+                    : string.Empty,
+                profileImageUrlStored = storedImage,
+                hasProfileImage = hasImage,
+            };
         }
 
         // ======================

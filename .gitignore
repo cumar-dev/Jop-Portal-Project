@@ -1,0 +1,23 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+
+# Backend
+job_Portal_Backend/appsettings.json
+job_Portal_Backend/appsettings.Development.json
+job_Portal_Backend/bin/
+job_Portal_Backend/obj/
+job_Portal_Backend/uploads/
+
+# Frontend
+job_Portal_frontend/node_modules/
+job_Portal_frontend/dist/

@@ -16,5 +16,9 @@ namespace job_Portal_Backend.Models
         public string? PasswordHash { get; set; }
 
         public string? Role { get; set; }
+
+        public string CompanyLogoUrl { get; set; } = string.Empty;
+
+        public string ProfileImageUrl { get; set; } = string.Empty;
     }
 }
