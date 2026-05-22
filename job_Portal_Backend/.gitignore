@@ -8,6 +8,8 @@ uploads/
 # Secrets
 appsettings.json
 appsettings.Development.json
+appsettings.example.json
+Job_Portal_API.postman_collection.json
 .env
 
 # IDE files
