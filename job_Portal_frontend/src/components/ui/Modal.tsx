@@ -50,7 +50,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby="modal-title"
         className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl ${
-          xl ? 'max-w-4xl' : wide ? 'max-w-2xl' : 'max-w-lg'
+          xl ? 'max-w-5xl' : wide ? 'max-w-2xl' : 'max-w-lg'
         }`}
       >
         {cover}

@@ -146,6 +146,8 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
       {!loading && applicants.length > 0 && (
 
+        <div className="-mx-6">
+
         <ApplicationsTableShell
 
           title="Applicants for this role"
@@ -154,21 +156,21 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
         >
 
-          <div>
+          <div className={applicationsTable.scroll}>
 
             <table className={applicationsTable.tableCompact}>
 
               <colgroup>
 
-                <col className="w-[24%]" />
+                <col className="w-[22%]" />
 
-                <col className="w-[14%]" />
+                <col className="w-[16%]" />
 
-                <col className="w-[28%]" />
+                <col className="w-[30%]" />
 
                 <col className="w-[18%]" />
 
-                <col className="w-[16%]" />
+                <col className="w-[14%]" />
 
               </colgroup>
 
@@ -220,6 +222,8 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
                           value={app.status}
 
+                          compact
+
                           loading={updatingId === app.id}
 
                           disabled={updatingId !== null && updatingId !== app.id}
@@ -234,7 +238,7 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
                     <td className={applicationsTable.tdCompact}>
 
-                      <p className={`${applicationsTable.muted} truncate`}>
+                      <p className={`${applicationsTable.muted} truncate text-xs`}>
 
                         {app.yearsOfExperience} years · {app.educationLevel || '—'}
 
@@ -242,7 +246,7 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
                       <p
 
-                        className={`${applicationsTable.secondary} truncate`}
+                        className={`${applicationsTable.secondary} line-clamp-2`}
 
                         title={app.skills}
 
@@ -254,7 +258,7 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
 
                       {app.message && (
 
-                        <p className={`${applicationsTable.secondary} mt-1 truncate`} title={app.message}>
+                        <p className={`${applicationsTable.secondary} mt-1 line-clamp-2`} title={app.message}>
 
                           {app.message}
 
@@ -297,6 +301,8 @@ export function ApplicantsModal({ open, onClose, jobId, jobTitle }: ApplicantsMo
           </div>
 
         </ApplicationsTableShell>
+
+        </div>
 
       )}
 

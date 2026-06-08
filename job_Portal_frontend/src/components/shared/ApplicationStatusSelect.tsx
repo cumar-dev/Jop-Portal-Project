@@ -12,6 +12,8 @@ interface ApplicationStatusSelectProps {
   onChange: (status: ApplicationStatus) => void
   disabled?: boolean
   loading?: boolean
+  /** Fits narrow table cells without overflowing adjacent columns */
+  compact?: boolean
   className?: string
   id?: string
 }
@@ -21,6 +23,7 @@ export function ApplicationStatusSelect({
   onChange,
   disabled,
   loading,
+  compact = false,
   className = '',
   id,
 }: ApplicationStatusSelectProps) {
@@ -28,8 +31,16 @@ export function ApplicationStatusSelect({
   const styles = getStatusStyles(value)
   const selectId = id ?? generatedId
 
+  const wrapperClass = compact
+    ? 'relative w-full min-w-0 max-w-full'
+    : 'relative inline-flex w-full min-w-0 max-w-[11rem]'
+
+  const selectClass = compact
+    ? 'py-1.5 pr-8 pl-2.5 text-xs'
+    : 'py-2 pr-9 pl-3 text-sm'
+
   return (
-    <div className={`relative inline-flex w-full min-w-[9.5rem] max-w-[11rem] ${className}`}>
+    <div className={`${wrapperClass} ${className}`}>
       <label htmlFor={selectId} className="sr-only">
         Application status
       </label>
@@ -38,7 +49,7 @@ export function ApplicationStatusSelect({
         value={value}
         disabled={disabled || loading}
         onChange={(e) => onChange(e.target.value as ApplicationStatus)}
-        className={`w-full cursor-pointer appearance-none rounded-lg border border-border bg-card py-2 pr-9 pl-3 text-sm font-medium text-ink shadow-sm outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-subtle disabled:opacity-60 ${styles.select}`}
+        className={`w-full min-w-0 cursor-pointer appearance-none rounded-lg border border-border bg-card font-medium text-ink shadow-sm outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-subtle disabled:opacity-60 ${selectClass} ${styles.select}`}
         aria-label="Update application status"
       >
         {APPLICATION_STATUSES.map((status) => (
